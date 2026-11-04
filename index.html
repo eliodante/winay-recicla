@@ -23,5 +23,27 @@
         });
       }
     </script>
+
+    <!-- Librerías de Firebase compat -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+
+    <script>
+      // Configuración con tus credenciales de Firebase
+      const firebaseConfig = {
+        apiKey: "AIzaSyBkk7c8GPdw_xUgQLhRN61f__0utmRx1Tg",
+        authDomain: "winay-recicla.firebaseapp.com",
+        databaseURL: "https://winay-recicla-default-rtdb.firebaseio.com",
+        projectId: "winay-recicla",
+        storageBucket: "winay-recicla.firebasestorage.app",
+        messagingSenderId: "759468595210",
+        appId: "1:759468595210:web:5b8575a9f57845668567f3",
+        measurementId: "G-HQ3E27368Z"
+      };
+
+      // Inicializar Firebase
+      firebase.initializeApp(firebaseConfig);
+      window.db = firebase.database();
+    </script>
   </body>
 </html>
