@@ -15,21 +15,13 @@
   </head>
   <body>
     <div id="root"></div>
-    <script type="module" src="./assets/main.js"></script>
-    <script>
-      if ("serviceWorker" in navigator) {
-        window.addEventListener("load", function () {
-          navigator.serviceWorker.register("./sw.js").catch(function () {});
-        });
-      }
-    </script>
 
     <!-- Librerías de Firebase compat -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 
     <script>
-      // Configuración con tus credenciales de Firebase
+      // Configuración de tu proyecto en Firebase
       const firebaseConfig = {
         apiKey: "AIzaSyBkk7c8GPdw_xUgQLhRN61f__0utmRx1Tg",
         authDomain: "winay-recicla.firebaseapp.com",
@@ -42,8 +34,48 @@
       };
 
       // Inicializar Firebase
-      firebase.initializeApp(firebaseConfig);
+      if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+      }
       window.db = firebase.database();
+
+      // SINCRONIZACIÓN EN TIEMPO REAL ENTRE DISPOSITIVOS
+      const KEY_AVISOS = "winay_recicla_avisos_v1";
+
+      // 1. Escuchar cambios de Firebase y actualizar la app al instante
+      window.db.ref("avisos").on("value", (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+          const listaAvisos = Array.isArray(data) ? data : Object.values(data);
+          localStorage.setItem(KEY_AVISOS, JSON.stringify(listaAvisos));
+          // Disparar evento para que React actualice la interfaz sin recargar
+          window.dispatchEvent(new Event("storage"));
+        }
+      });
+
+      // 2. Sobrescribir localStorage.setItem para subir datos a Firebase automáticamente
+      const localSetItem = localStorage.setItem.bind(localStorage);
+      localStorage.setItem = function (key, value) {
+        localSetItem(key, value);
+        if (key === KEY_AVISOS) {
+          try {
+            const datosParseados = JSON.parse(value);
+            window.db.ref("avisos").set(datosParseados);
+          } catch (e) {
+            console.error("Error al sincronizar con Firebase:", e);
+          }
+        }
+      };
+    </script>
+
+    <!-- Cargar la aplicación React empaquetada -->
+    <script type="module" src="./assets/main.js"></script>
+    <script>
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", function () {
+          navigator.serviceWorker.register("./sw.js").catch(function () {});
+        });
+      }
     </script>
   </body>
 </html>
