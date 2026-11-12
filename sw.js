@@ -1,6 +1,6 @@
 /* Service worker mínimo: guarda la app para abrirla sin conexión.
    Estrategia "red primero": si hay internet usa lo más nuevo; si no, usa lo guardado. */
-const CACHE = "winay-v1";
+const CACHE = "winay-v2";
 
 self.addEventListener("install", (e) => {
   self.skipWaiting();
